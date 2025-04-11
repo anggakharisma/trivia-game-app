@@ -1,11 +1,11 @@
 "use client"
-import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bell, Clock, Lock } from 'lucide-react';
-import dataQuestions from './data/questions'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Lock, Shuffle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import dataQuestions from './data/questions';
 
 // Array of team color schemes
 const teamColorSchemes = [
@@ -21,8 +21,6 @@ const teamColorSchemes = [
 
 // Default teams
 const defaultTeams = [
-  { id: 1, name: "Team Alpha", score: 0, colorScheme: teamColorSchemes[0] },
-  { id: 2, name: "Team Beta", score: 0, colorScheme: teamColorSchemes[1] }
 ];
 
 // localStorage keys
@@ -216,20 +214,28 @@ export default function TriviaApp() {
     ));
   };
 
-  // Function to select a question
-  const selectQuestion = (categoryIdx, questionIdx) => {
+  // Function to select a category and immediately pick a random unanswered question
+  const selectCategory = (categoryIdx) => {
     const category = questions.categories[categoryIdx];
-    const question = category.questions[questionIdx];
+    const unansweredQuestions = category.questions.filter(
+      question => !answeredQuestions.includes(question.id)
+    );
+    
+    if (unansweredQuestions.length === 0) {
+      alert("All questions in this category have been answered!");
+      return;
+    }
+    
+    // Pick a random question from the unanswered ones
+    const randomIndex = Math.floor(Math.random() * unansweredQuestions.length);
+    const randomQuestion = unansweredQuestions[randomIndex];
     const pointMultiplier = gameRound === 2 ? 2 : 1;
-
+    
     setCurrentQuestion({
-      ...question,
+      ...randomQuestion,
       category: category.name,
-      actualPoints: question.points * pointMultiplier
+      actualPoints: randomQuestion.points * pointMultiplier
     });
-
-    // Mark question as answered
-    // setAnsweredQuestions([...answeredQuestions, question.id]);
   };
 
   // Function to close the current question and go back to categories
@@ -323,13 +329,15 @@ export default function TriviaApp() {
                         >
                           Round 1 (10 pts)
                         </TabsTrigger>
-                        <TabsTrigger
-                          value="round2"
-                          onClick={() => setGameRound(2)}
-                          className={gameRound === 2 ? "font-bold" : ""}
-                        >
-                          Final Round (20 pts)
-                        </TabsTrigger>
+                        {
+                          // <TabsTrigger
+                          // value="round2"
+                          // onClick={() => setGameRound(2)}
+                          // className={gameRound === 2 ? "font-bold" : ""}
+                          // >
+                          // Final Round (20 pts)
+                          // </TabsTrigger>
+                        }
                       </TabsList>
                     </Tabs>
                   </div>
@@ -347,7 +355,6 @@ export default function TriviaApp() {
                           </CardTitle>
                         </CardHeader>
                         <CardFooter className="pt-2 flex justify-end gap-2">
-                      
                           <Button size="sm" variant="outline" onClick={() => updateScore(team.id, -10)}>-10</Button>
                           <Button size="sm" variant="outline" onClick={() => updateScore(team.id, 10)}>+10</Button>
                           <Button size="sm" variant="outline" onClick={() => updateScore(team.id, 20)}>+20</Button>
@@ -375,7 +382,10 @@ export default function TriviaApp() {
                             <p className="font-semibold">Answer: {currentQuestion.answer}</p>
                           </div>
                         ) : (
-                          <Button onClick={() => setShowAnswer(true)}>Reveal Answer</Button>
+                          <Button onClick={() => {
+                            setAnsweredQuestions([...answeredQuestions, currentQuestion.id]);
+                            setShowAnswer(true)
+                          }}>Reveal Answer</Button>
                         )}
                       </CardContent>
                       <CardFooter className="flex justify-between">
@@ -395,28 +405,34 @@ export default function TriviaApp() {
                     </Card>
                   ) : (
                     <div className="categories-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {questions.categories.map((category, categoryIdx) => (
-                        <Card key={category.name} className="bg-white">
-                          <CardHeader className="pb-2">
-                            <CardTitle>{category.name}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid grid-cols-1 gap-2">
-                              {category.questions.map((question, questionIdx) => (
-                                <Button
-                                  key={question.id}
-                                  variant={answeredQuestions.includes(question.id) ? "ghost" : "outline"}
-                                  disabled={answeredQuestions.includes(question.id)}
-                                  onClick={() => selectQuestion(categoryIdx, questionIdx)}
-                                  className="h-12"
-                                >
-                                  {question.points * (gameRound === 2 ? 2 : 1)} pts
-                                </Button>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                      {questions.categories.map((category, categoryIdx) => {
+                        // Count unanswered questions in this category
+                        const unansweredCount = category.questions.filter(
+                          q => !answeredQuestions.includes(q.id)
+                        ).length;
+                        
+                        return (
+                          <Card key={category.name} className="bg-white">
+                            <CardHeader className="pb-2">
+                              <CardTitle>{category.name}</CardTitle>
+                              <p className="text-sm text-gray-500">
+                                {unansweredCount} / {category.questions.length} questions remaining
+                              </p>
+                            </CardHeader>
+                            <CardContent>
+                              <Button
+                                variant="outline"
+                                onClick={() => selectCategory(categoryIdx)}
+                                className="w-full"
+                                disabled={unansweredCount === 0}
+                              >
+                                <Shuffle size={16} className="mr-2" />
+                                Pick Random Question
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
