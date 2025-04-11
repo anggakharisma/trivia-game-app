@@ -229,7 +229,7 @@ export default function TriviaApp() {
     });
 
     // Mark question as answered
-    setAnsweredQuestions([...answeredQuestions, question.id]);
+    // setAnsweredQuestions([...answeredQuestions, question.id]);
   };
 
   // Function to close the current question and go back to categories
