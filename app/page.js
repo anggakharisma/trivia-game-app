@@ -38,7 +38,7 @@ function LoginForm({ onLogin }) {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'password') {
+    if (username === 'admin' && password === 'trivpass2024') {
       onLogin(true);
       setError('');
     } else {
