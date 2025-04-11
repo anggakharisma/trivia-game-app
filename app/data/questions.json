@@ -1,0 +1,67 @@
+{
+  "categories": [
+    {
+      "name": "Umum",
+      "questions": [
+        {
+          "id": "u1",
+          "text": "Who was the first President of the United States?",
+          "answer": "George Washington",
+          "points": 10
+        },
+        {
+          "id": "u2",
+          "text": "In which year did World War II end?",
+          "answer": "1945",
+          "points": 10
+        },
+        {
+          "id": "u3",
+          "text": "In which year did World War II end?",
+          "answer": "1945",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "Sejarah",
+      "questions": [
+        {
+          "id": "s1",
+          "text": "Who was the first President of the United States?",
+          "answer": "George Washington",
+          "points": 10
+        },
+        {
+          "id": "s2",
+          "text": "In which year did World War II end?",
+          "answer": "1945",
+          "points": 10
+        },
+        {
+          "id": "s3",
+          "text": "In which year did World War II end?",
+          "answer": "1945",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "Science",
+      "questions": [
+        {
+          "id": "s1",
+          "text": "What is the chemical symbol for gold?",
+          "answer": "Au",
+          "points": 10
+        },
+        {
+          "id": "s2",
+          "text": "What is the closest planet to the Sun?",
+          "answer": "Mercury",
+          "points": 10
+        }
+      ]
+    }
+  ]
+}
